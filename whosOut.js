@@ -45,41 +45,53 @@ console.log(options);
                 responseArray.push("All Hands OnBoard!")
             }else{
                 result.calendar.item.forEach(item => {
-                
-                    const startDate = moment(item.start[0])
-                    const endDate = moment(item.end[0])
-                    const entryRange = moment.range(startDate, endDate)
 
-                    var start = moment().startOf('day'); // set to 12:00 am today
-                    var end = moment().endOf('day'); // set to 23:59 pm today
-                    const today = moment.range(start,end)
-
-                    //Setting week start to Monday
-                    const weekStart = moment().startOf('isoweek')
-                    //Setting week end to Friday
-                    const weekEnd = moment().endOf('isoweek').subtract('2', 'days')
-                    const thisWeek = moment.range(weekStart,weekEnd)
-
-                    const eventDetails = {
-                        name : item.employee[0]._,
-                        start : startDate.isSame(start) ? " today" : startDate.format("MMM DD"),
-                        end: startDate.isSame(endDate)?"": " to "+endDate.format("MMM DD")
-                    }
+                    console.log("Item"+JSON.stringify(item))
 
                     if(item.$.type == "holiday"){
-                        responseArray.push("🎉Company Holiday🎉 "+eventDetails.start+eventDetails.end)
-                    }else if(item.$.type == "timeOff"){
-                        const name = item.employee[0]._;
-                        responseArray.push(eventDetails.name+" is off "+eventDetails.start+eventDetails.end)
+                        
+                        var name = item.holiday[0]._ 
+                        const startDate = moment(item.start[0])
+                        //const endDate = moment(item.end[0])
+                        
+                        responseArray.push("🎉"+name+"🎉 "+startDate.format("MMM DD"))
+                    }else{
+                        const startDate = moment(item.start[0])
+                        const endDate = moment(item.end[0])
+                        const entryRange = moment.range(startDate, endDate)
+    
+                        var start = moment().startOf('day'); // set to 12:00 am today
+                        var end = moment().endOf('day'); // set to 23:59 pm today
+                        const today = moment.range(start,end)
+    
+                        //Setting week start to Monday
+                        const weekStart = moment().startOf('isoweek')
+                        //Setting week end to Friday
+                        const weekEnd = moment().endOf('isoweek').subtract('2', 'days')
+                        const thisWeek = moment.range(weekStart,weekEnd)
+    
+                        const eventDetails = {
+                            name : item.employee[0]._,
+                            start : startDate.isSame(start) ? " today" : startDate.format("MMM DD"),
+                            end: startDate.isSame(endDate)?"": " to "+endDate.format("MMM DD")
+                        }
+    
+                        if(item.$.type == "timeOff"){
+                            const name = item.employee[0]._;
+                            responseArray.push(eventDetails.name+" is off "+eventDetails.start+eventDetails.end)
+                        }
+
                     }
+                
+                    
                 });
 
             }
 
-            console.log(responseArray.join('\n\n'))
+            console.log(responseArray.join('\n'))
 
             bot.sendWebhook({
-                text: responseArray.join('\n\n'),
+                text: responseArray.join('\n'),
                 username: 'Bueller, Bueller Bot',
                 icon_emoji: ':date:'
             }, function(err) {
